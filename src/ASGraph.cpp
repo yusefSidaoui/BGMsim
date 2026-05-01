@@ -1,12 +1,14 @@
 #include <iostream>
 #include "ASGraph.h"
+#include <vector>
+#include <queue>
 
 void ASGraph::addProviderCustomer(int provider, int customer){
 
     nodes.try_emplace(provider, ASNode{provider});
     nodes.try_emplace(customer, ASNode{customer});
 
-    nodes[provider].customer.insert(customer);
+    nodes[provider].customers.insert(customer);
     nodes[customer].providers.insert(provider);
 
 }
@@ -30,7 +32,7 @@ bool dfs(int node, std::unordered_map<int, ASNode>& graph, std::unordered_set<in
 
     visiting.insert(node);
 
-    for(int child : graph[node].customer) {
+    for(int child : graph[node].customers) {
         if (visited.count(child)) continue;
 
         if (visiting.count(child)) return true;
@@ -56,4 +58,40 @@ bool ASGraph::detectCycles() {
         }
     }
     return false;
+}
+
+std::vector<std::vector<int>> ASGraph::computeRanks() {
+    std::vector<std::vector<int>> ranks;
+
+    std::queue<int> q;
+
+    for (auto& [asn, node] : nodes) {
+        if (node.customers.empty()) {
+            node.rank = 0;
+            q.push(asn);
+        }
+    }
+
+    while (!q.empty()) {
+        int curr = q.front(); q.pop();
+        int currRank = nodes[curr].rank;
+
+        for (int provider : nodes[curr].providers) {
+            if (nodes[provider].rank < currRank + 1) {
+                nodes[provider].rank = currRank + 1;
+                q.push(provider);
+            }
+        }
+    }
+
+    int maxRank = 0;
+    for (auto& [asn, node] : nodes)
+        maxRank = std::max(maxRank, node.rank);
+
+    ranks.resize(maxRank + 1);
+
+    for (auto& [asn, node] : nodes)
+        ranks[node.rank].push_back(asn);
+
+    return ranks;
 }

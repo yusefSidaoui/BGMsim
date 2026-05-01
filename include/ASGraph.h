@@ -1,6 +1,7 @@
 #pragma once
-#include "ASnode.h"
+#include "ASNode.h"
 #include <unordered_map>
+#include <vector>
 
 class ASGraph {
 public:
@@ -13,5 +14,6 @@ public:
 
     ASNode& getNode(int asn);
 
+    std::vector<std::vector<int>> computeRanks();
 };
 
