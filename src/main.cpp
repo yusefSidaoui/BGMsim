@@ -21,7 +21,6 @@ int main(int argc, char* argv[]){
 
     parseASRel(asRelFile, graph);
 
-
     if (graph.detectCycles()) {
         std::cerr << "Cycle detected\n";
         return 1;

@@ -81,15 +81,14 @@ void dumpCSV(ASGraph& graph, const std::string& outFile) {
     std::ofstream out(outFile);
     out << "asn,prefix,as_path\n";
 
-    for (auto& [asn, node] : graph.nodes){
-        for (auto& [prefix, ann] : node.localRIB){
-            out << asn << "," << prefix << ",";
-
-            for(int i = 0; i < ann.asPath.size(); i++){
-                out << ann.asPath[i];
-                if(i+1 < ann.asPath.size()) out << "-";
+    for (auto& [asn, node] : graph.nodes) {
+        for (auto& [prefix, ann] : node.localRIB) {
+            out << asn << "," << prefix << ",\"(";
+            for (int i = 0; i < (int)ann.asPath.size(); i++) {
+                out << ann.asPath[i] << ",";
+                if (i + 1 < (int)ann.asPath.size()) out << " ";
             }
-            out << "\n";
+            out << ")\"\n";
         }
     }
 }
